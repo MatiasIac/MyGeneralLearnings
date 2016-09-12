@@ -1,0 +1,45 @@
+<html>
+	<body>
+		<script src="http://cdn.extendjs.org/0.2.3/extend.min.js"></script>
+		<script>
+			var chainBase = Class.extend(function(){
+				this._next = null;
+				
+				this.goNext = function (value) {
+					if (this._next !== null) {
+						this._next.validate(value);
+					}
+				};
+				
+				this.validate = function (value) {};
+			});
+
+			var charMin = chainBase.extend(function () {
+				this.super();
+				
+				this.validate = function (value) {
+					if (value.length < 3) {
+						throw "No es sufientemente largo";
+					}
+					this.goNext(value);
+				};
+			});
+
+			var charMax = chainBase.extend(function () {
+				this.super();
+
+				this.validate = function (value) {
+					if (value.length > 10) {
+						throw "Es muy largo";
+					}
+					this.goNext(value);
+				};
+			});
+
+			var a = new charMin(),
+			b = new charMax();
+			a._next = b;
+			a.validate('ab');
+		</script>
+	</body>
+</html>
