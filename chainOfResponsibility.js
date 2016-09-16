@@ -17,36 +17,29 @@ app.listen(3000, function () {
     string not contains a special characters
 */
 
-var checkLengthUpperBound = function (str) {
-    console.log(3);
-    console.log(str);
-    return str.length < 15;
-};
+var chain = function () {
 
-var checkLengthLowerBound = function (str) {
-    return 'pinchila';
-};
-
-var checkNumber = function (str) {
+	this.next = null;
 
 };
 
-var checkUpperCase = function (str) {
-
-};
-
-var checkNoSpecialCharacters = function (str) {
-
-};
-
-var testStr = function (str) {
-    return {
-        str: str,
-        checkUpperBound: function () {
-            checkLengthUpperBound(this.str);
-        },
-        check: function () {
-            this.checkUpperBound();
-        }
+var checkUpperBound = function () {
+    this.validate = function (str) {
+    	return str.length < 15;
     };
 };
+
+var checkLowerBound = function () {
+    this.validate = function (str) {
+    	return str.length > 3;
+    };
+};
+
+checkUpperBound.prototype = new chain();
+checkLowerBound.prototype = new chain();
+
+
+var a = new checkUpperBound();
+	b = new checkLowerBound();
+
+	a.next = b;
