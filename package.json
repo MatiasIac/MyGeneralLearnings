@@ -1,0 +1,10 @@
+{
+  "name": "Design-patterns",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "vows --spec --isolate"
+  },
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
