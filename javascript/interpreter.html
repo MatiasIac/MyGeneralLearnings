@@ -1,0 +1,122 @@
+<script src="http://cdn.extendjs.org/0.2.3/extend.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script>
+	"use strict";
+	
+	var treeNode = function (current, nodes) {
+		this.currentNode = current;
+		this.nodes = nodes || [];
+	};
+	
+	var expressionBase = Class.extend(function () {
+		this.syntax = '';
+		this.interpret = function (context) { };
+	});
+	
+	var postExpression = expressionBase.extend(function () {
+		this.syntax = 'post';
+		this.interpret = function (context) { };
+	});
+	
+	var getExpression = expressionBase.extend(function () {
+		this.syntax = 'get';
+		
+		this.interpret = function (context) {
+			if (context._expression.substring(0, 4) !== "get ") { throw "Incorrect syntax"; }
+			
+			var target = context._expression.substring(4, context._expression.indexOf(' ', 4));
+			
+			$.ajax({
+				url: target,
+				async: false,
+				success: function (data) {
+					context._data = data;
+				}
+			});
+		};
+	});
+
+	var typeExpression = expressionBase.extend(function () {
+		this.syntax = 'type';
+		
+		this.interpret = function (context) {
+			if (context._expression.substring(0, 5) !== "type ") { throw "Incorrect syntax"; }
+			
+			var data = context._expression.substring(6, context._expression.indexOf('"', 6));
+			data = data.substring(0, data.length);
+			context._data = data;
+		};
+	});
+	
+	var thenExpression = expressionBase.extend(function () {
+		this.syntax = '=>';
+		
+		this.interpret = function (context) {
+			var validator = context._expression.split(' => ');
+			if (validator.length !== 2) { throw "Incorrect syntax near =>"; }
+		};
+	});
+
+	var creatorExpression = expressionBase.extend(function () {
+		this.syntax = '*';
+		
+		this.interpret = function (context) {
+			var holder = context._expression.substring(context._expression.indexOf('=> ') + 3).trim();
+			window[holder] = context._data;
+		};
+	});
+	
+	var context = function () {
+		
+		this._data = null;
+		this._expression = null;
+		
+		var tree = new treeNode(undefined, [
+			new treeNode(new getExpression(), [
+				new treeNode(new thenExpression(), [
+					new treeNode(new creatorExpression())
+				])
+			]),
+			new treeNode(new postExpression()),
+			new treeNode(new typeExpression(), [
+				new treeNode(new thenExpression(), [
+					new treeNode(new creatorExpression())
+				])
+			])
+		]);
+		
+		this.expressionResult = function () {
+			return this._data;
+		};
+		
+		this.setContext = function (expression) {
+			var self = this;
+			this._expression = expression;
+				
+			function parser(node) {
+				if (node.currentNode !== undefined) {
+					node.currentNode.interpret(self);
+				}
+				
+				for (var i = 0; i < node.nodes.length; i++) {
+					if (node.nodes[i].currentNode.syntax === '*' || 
+						expression.indexOf(node.nodes[i].currentNode.syntax) >= 0) {
+						parser(node.nodes[i]);
+						break;
+					}
+				}		
+			}
+		
+			parser(tree);
+		};
+	};
+	
+	var myContext = new context();
+	
+	myContext.setContext('get http://jsonplaceholder.typicode.com/posts/1 => data');
+	
+	myContext.setContext('type "hola mundo" => text');
+	
+	console.log(data);
+	console.log(text);
+</script>
