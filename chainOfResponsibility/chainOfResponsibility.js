@@ -12,4 +12,6 @@ module.exports = function (app) {
     app.get('/chain/:string', function (req, res) {
         res.send('string : ' +  a.validate(req.params.string));
     });
+
+    return app;
 };
