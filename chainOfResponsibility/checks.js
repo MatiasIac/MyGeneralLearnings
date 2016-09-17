@@ -15,6 +15,8 @@ module.exports = (function () {
         this.goNext = function (str) {
             if (this.next !== null) {
                 return this.next.validate(str);
+            } else {
+                return 'The chain test is ok';
             }
         };
 
@@ -22,19 +24,26 @@ module.exports = (function () {
 
     var checkUpperBound = function () {
         this.validate = function (str) {
-            return str.length > 15 ? "Max length line (above 15)" : this.goNext(str);
+            return str.length > 15 ?
+                "Max length line (above 15)" :
+                this.goNext(str);
         };
     };
 
     var checkLowerBound = function () {
         this.validate = function (str) {
-            return str.length < 3  ? "Min length line (Below 3)" : this.goNext(str);
+            return str.length < 3  ?
+                "Min length line (Below 3)" :
+                this.goNext(str);
         };
     };
 
     var checkNumber = function () {
         this.validate = function (str) {
-            return str.match(/[0-9]/gi) ? this.goNext(str) : "Not contains a number";
+            console.log(str.match(/[0-9]/gi));
+            return str.match(/[0-9]/gi) ?
+                this.goNext(str) :
+                "Not contains a number";
         };
     };
 
