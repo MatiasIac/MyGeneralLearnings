@@ -56,12 +56,20 @@
 			if (validator.length !== 2) { throw "Incorrect syntax near =>"; }
 		};
 	});
-
-	var creatorExpression = expressionBase.extend(function () {
-		this.syntax = '*';
+	
+	var consoleExpression = expressionBase.extend(function () {
+		this.syntax = '<=';
 		
 		this.interpret = function (context) {
-			var holder = context._expression.substring(context._expression.indexOf('=> ') + 3).trim();
+			console.log(context._data);
+		};
+	});
+
+	var creatorExpression = expressionBase.extend(function () {
+		this.syntax = 'create_var';
+		
+		this.interpret = function (context) {
+			var holder = context._expression.substring(context._expression.indexOf('create_var ') + 11).trim();
 			window[holder] = context._data;
 		};
 	});
@@ -81,7 +89,8 @@
 			new treeNode(new typeExpression(), [
 				new treeNode(new thenExpression(), [
 					new treeNode(new creatorExpression())
-				])
+				]),
+				new treeNode(new consoleExpression())
 			])
 		]);
 		
@@ -99,8 +108,7 @@
 				}
 				
 				for (var i = 0; i < node.nodes.length; i++) {
-					if (node.nodes[i].currentNode.syntax === '*' || 
-						expression.indexOf(node.nodes[i].currentNode.syntax) >= 0) {
+					if (expression.indexOf(node.nodes[i].currentNode.syntax) >= 0) {
 						parser(node.nodes[i]);
 						break;
 					}
@@ -113,10 +121,12 @@
 	
 	var myContext = new context();
 	
-	myContext.setContext('get http://jsonplaceholder.typicode.com/posts/1 => data');
+	myContext.setContext('get http://jsonplaceholder.typicode.com/posts/1 => create_var data');
 	
-	myContext.setContext('type "hola mundo" => text');
+	myContext.setContext('type "hola mundo" <=');
 	
-	console.log(data);
-	console.log(text);
+	myContext.setContext('type "type this to the console" => create_var bla');
+	
+	//console.log(data);
+	//console.log(text);
 </script>
