@@ -1,6 +1,6 @@
 module.exports = function (app) {
 
-    var checks = require('./checks.js');
+    var checks = require('./checks');
 
     var a = new checks.checkUpperBound();
         b = new checks.checkLowerBound();
