@@ -7,5 +7,10 @@ module.exports = function (app) {
         res.status(200).send();
     });
 
+    app.delete('/observe/delete', function (req, res) {
+        observer.observe.delete(req.body);
+        res.status(200).send();
+    });
+
     return app;
 };

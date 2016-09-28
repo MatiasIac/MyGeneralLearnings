@@ -2,7 +2,8 @@
   "name": "Design-patterns",
   "version": "0.0.1",
   "scripts": {
-    "test": "vows --spec --isolate"
+    "test": "vows --spec --isolate",
+    "start" : "nodemon server.js"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
