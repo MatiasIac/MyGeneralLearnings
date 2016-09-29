@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "system",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outFile": "observer.js",
+        "sourceMap": false
+    },
+    "files": [
+        "observer.ts"
+    ]
+}
