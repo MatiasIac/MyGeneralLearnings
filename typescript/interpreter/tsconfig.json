@@ -8,6 +8,6 @@
         "sourceMap": false
     },
     "files": [
-        "main.ts"
+        "interpreter.ts"
     ]
 }
