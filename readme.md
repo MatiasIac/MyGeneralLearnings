@@ -1,1 +1,1 @@
-This repo is used for the internal workshop about design patterns
+All the implementation was developed in Java.
