@@ -42,6 +42,9 @@ class Proxy(InterpreterProxy):
             new_index = (last_index + 1) % len(self._interpreters)
             self._last_called = self._interpreters[new_index]
 
+            if new_index == 0:
+                print 'calling the fist interpreter on the set'
+
         self._last_called.call()
 
 # Instantiate some interpreter handlers for the proxy:
@@ -56,5 +59,5 @@ p = Proxy(interpreters=[int1, int2, int3])
 p.add_interpreter(int4)
 
 # Let's make some proxy calls
-for _ in range(0, len(p.get__interpreters()) * 3):
+for _ in range(0, len(p.get_interpreters()) * 3):
     p.request()
