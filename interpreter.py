@@ -191,48 +191,65 @@ class Validator(object):
             self.tree.append(handler)
 
     def validate(self, value, kind):
-        self.notifier.notify('factory validator', kind, 'validating text')
+        if self.notifier is not None:
+            self.notifier.notify(
+                'factory validator', kind, 'validating %s' % kind
+            )
+
         handler = self.handlers.get(kind)
         return handler.validate(value)
 
+    call = validate
+
+
 ###############################################################################
 
-# Our observers
-obs_number = Observer(name='obs_number')
-obs_header = Observer(name='obs_header')
-obs_string = Observer(name='obs_string')
-obs_constr = Observer(name='obs_constr')
+def build_validator(with_observer=False):
 
-# Howdy to our notifier!
-ntf = Notifier()
+    ntf = None
+    if with_observer:
+        # Our observers
+        obs_number = Observer(name='obs_number')
+        obs_header = Observer(name='obs_header')
+        obs_string = Observer(name='obs_string')
+        obs_constr = Observer(name='obs_constr')
 
-# Let's make some channels for each group in our synctax and work the plumbing
-# for notifications
-ntf.add_subscriber('header', obs_header)
-ntf.add_subscriber('constraint', obs_constr)
-ntf.add_subscriber('number', obs_number)
-ntf.add_subscriber('text', obs_string)
+        # Howdy to our notifier!
+        ntf = Notifier()
 
-# Now let's put together our steaming factory
-validator = Validator(filename='rules.txt', notifier=ntf)
+        # Let's make some channels for each group in our synctax and work
+        # the plumbing for notifications
+        ntf.add_subscriber('header', obs_header)
+        ntf.add_subscriber('constraint', obs_constr)
+        ntf.add_subscriber('number', obs_number)
+        ntf.add_subscriber('text', obs_string)
 
-# Let's put a context together
-validator.parse_file()
+    # Now let's put together our steaming factory
+    validator = Validator(filename='rules.txt', notifier=ntf)
 
-# We parsed the file already, let's now do some actual syntax parsing
-validator.build_tree()
+    # Let's put a context together
+    validator.parse_file()
 
-# Run some (notified :) ) validations to see how things go:
-print validator.validate('this one is too long', 'text')  # False
-print validator.validate('good one', 'text')  # True
+    # We parsed the file already, let's now do some actual syntax parsing
+    validator.build_tree()
 
-print validator.validate('objeto no nulo', 'constraint')  # True
-print validator.validate(None, 'constraint')  # False
+    return validator
 
-print validator.validate(22, 'number')  # True
-print validator.validate(22.0, 'number')  # False
+if __name__ == "__main__":
 
-print validator.validate('Crear reglas:', 'header')  # True
-print validator.validate('Crear reglas', 'header')  # False
+    validator = build_validator()
+
+    # Run some (notified :) ) validations to see how things go:
+    print validator.validate('this one is too long', 'text')  # False
+    print validator.validate('good one', 'text')  # True
+
+    print validator.validate('objeto no nulo', 'constraint')  # True
+    print validator.validate(None, 'constraint')  # False
+
+    print validator.validate(22, 'number')  # True
+    print validator.validate(22.0, 'number')  # False
+
+    print validator.validate('Crear reglas:', 'header')  # True
+    print validator.validate('Crear reglas', 'header')  # False
 
 
