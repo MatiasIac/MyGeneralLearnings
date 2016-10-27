@@ -2,6 +2,8 @@
 import codecs
 import re
 
+from observer import Observer, Notifier
+
 
 class Context(object):
     def __init__(self, expression):
@@ -32,89 +34,89 @@ class ExpressionBase(object):
 
 class HeaderExpression(ExpressionBase):
     validators = []
-    header_str = "Crear reglas:"
+    header_str = 'Crear reglas:'
 
     def interpret(self):
         if not self.context:
-            raise Exception("Incorrect syntax for NumberExpression")
+            raise Exception('Incorrect syntax for NumberExpression')
 
         if self.context.expression == self.header_str:
             self.validators.append(lambda x: x == self.header_str)
-            print "[header - interpret] correct header expression"
+            print '[header - interpret] correct header expression'
         else:
-            print "[header - interpret] WRONG header expression"
+            print '[header - interpret] WRONG header expression'
 
 
 class NumberExpression(ExpressionBase):
     validators = []
-    number_str = "es entero"
+    number_str = 'es entero'
 
     def interpret(self):
         if not self.context.expression:
-            raise Exception("Incorrect syntax for NumberExpression")
+            raise Exception('Incorrect syntax for NumberExpression')
 
         for rule in self.context.expression:
             if rule == self.number_str:
                 self.validators.append(lambda x: isinstance(x, int))
-                print "[number - interpret] correct number expression"
+                print '[number - interpret] correct number expression'
             else:
-                raise Exception("Invalid rule: %s", rule)
+                raise Exception('Invalid rule: %s', rule)
 
 
 class StringExpression(ExpressionBase):
     validators = []
-    non_empty_str = u"tipo no vacío"
-    length_left = "no mayor a "
-    length_right = " caracteres"
+    non_empty_str = u'tipo no vacío'
+    length_left = 'no mayor a '
+    length_right = ' caracteres'
 
     @staticmethod
     def _extract_length(length_str):
-        match = re.search(r"\d{2}", length_str)
+        match = re.search(r'\d{2}', length_str)
         if match is not None:
-            return match.group()
+            return int(match.group())
 
     def interpret(self):
         if not self.context.expression:
-            raise Exception("Incorrect syntax for StringExpression")
+            raise Exception('Incorrect syntax for StringExpression')
 
         for rule in self.context.expression:
 
             if rule == self.non_empty_str:
                 self.validators.append(lambda x: bool(x))
-                print "[string - interpret] non-empty string expression"
+                print '[string - interpret] non-empty string expression'
 
             elif self.length_left in rule and self.length_right in rule:
                 num = self._extract_length(rule)
                 self.validators.append(lambda x: len(x) <= num)
                 print (
-                    "[string - interpret] max-length %s string "
-                    "expression" % num
+                    '[string - interpret] max-length %s string '
+                    'expression' % num
                 )
 
             else:
-                raise Exception("Invalid rule: %s", rule)
+                raise Exception('Invalid rule: %s', rule)
 
 
 class ConstraintExpression(ExpressionBase):
     validators = []
-    constraint_str = "objeto no nulo"
+    constraint_str = 'objeto no nulo'
 
     def interpret(self):
         if not self.context:
-            raise Exception("Incorrect syntax for ConstraintExpression")
+            raise Exception('Incorrect syntax for ConstraintExpression')
 
         if self.context.expression == self.constraint_str:
             self.validators.append(lambda x: bool(x))
-            print "[constraint - interpret] correct constraint expression"
+            print '[constraint - interpret] correct constraint expression'
         else:
-            print "[constraint - interpret] WRONG constraint expression"
+            print '[constraint - interpret] WRONG constraint expression'
 
 
 class Validator(object):
 
     # Markers
-    header_str = "Crear reglas:"
-    const_str = "objeto no nulo"
+    header_str = 'Crear reglas:'
+    const_str = 'objeto no nulo'
 
     # Map
     handler_map = {
@@ -124,8 +126,9 @@ class Validator(object):
         'constraint': ConstraintExpression
     }
 
-    def __init__(self, filename):
+    def __init__(self, filename, notifier=None):
         self.filename = filename
+        self.notifier = notifier
         self.handlers = {}
         self.tree = []
         self.data = None
@@ -134,13 +137,13 @@ class Validator(object):
 
         # Let's read the file and start working on it
         content = codecs.open(self.filename, encoding='utf-8').read()
-        content = content.split("\n    si")
+        content = content.split('\n    si')
 
         # After splitting, we expect a list of 3 elements
         if len(content) != 3:
             raise Exception(
-                "Invalid file format. Parse should get 3 sections and "
-                "it got %s", len(content)
+                'Invalid file format. Parse should get 3 sections and '
+                'it got %s', len(content)
                 )
 
         # Let's start putting the data together, easy stuff first
@@ -154,12 +157,12 @@ class Validator(object):
             group = group.strip().split('\n')
 
             key = None
-            if "texto" in group[0]:
+            if 'texto' in group[0]:
                 key = 'text'
-            elif u"número" in group[0]:
+            elif u'número' in group[0]:
                 key = 'number'
             else:
-                raise Exception("Invalid group content: %s", group[0])
+                raise Exception('Invalid group content: %s', group[0])
 
             data[key] = [elem.strip() for elem in group[1:]]
 
@@ -188,15 +191,48 @@ class Validator(object):
             self.tree.append(handler)
 
     def validate(self, value, kind):
+        self.notifier.notify('factory validator', kind, 'validating text')
         handler = self.handlers.get(kind)
         return handler.validate(value)
 
 ###############################################################################
 
-validator = Validator('rules.txt')
+# Our observers
+obs_number = Observer(name='obs_number')
+obs_header = Observer(name='obs_header')
+obs_string = Observer(name='obs_string')
+obs_constr = Observer(name='obs_constr')
+
+# Howdy to our notifier!
+ntf = Notifier()
+
+# Let's make some channels for each group in our synctax and work the plumbing
+# for notifications
+ntf.add_subscriber('header', obs_header)
+ntf.add_subscriber('constraint', obs_constr)
+ntf.add_subscriber('number', obs_number)
+ntf.add_subscriber('text', obs_string)
+
+# Now let's put together our steaming factory
+validator = Validator(filename='rules.txt', notifier=ntf)
+
 # Let's put a context together
 validator.parse_file()
-print validator.data
 
+# We parsed the file already, let's now do some actual syntax parsing
 validator.build_tree()
-print validator.validate("no mayor a 10 caracteres", 'text')
+
+# Run some (notified :) ) validations to see how things go:
+print validator.validate('this one is too long', 'text')  # False
+print validator.validate('good one', 'text')  # True
+
+print validator.validate('objeto no nulo', 'constraint')  # True
+print validator.validate(None, 'constraint')  # False
+
+print validator.validate(22, 'number')  # True
+print validator.validate(22.0, 'number')  # False
+
+print validator.validate('Crear reglas:', 'header')  # True
+print validator.validate('Crear reglas', 'header')  # False
+
+
