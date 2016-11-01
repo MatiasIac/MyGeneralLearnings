@@ -8,15 +8,17 @@ import test.factoryMethod.Rule;
 public class OnlyNumbersValidator extends Rule {
     private final String NUMBER_REGEX = "[-]?[0-9]*\\.?[0-9]+";
 
+    public OnlyNumbersValidator(){
+        name = "ONLY NUMBERS VALIDATOR";
+    }
+
     @Override
     public void handle(String input) {
         if (allNumbers(input)) {
-            //notificar que se mueve
+            notifyObservers();
             goNext(input);
-
         } else {
-            //notificar que se mueve
-            System.out.printf("Error. Input hasn't all letters");
+            System.out.printf("Error. Input hasn't all numbers");
         }
     }
 

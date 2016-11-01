@@ -3,21 +3,11 @@ package test.chainOfResponsability;
 /**
  * Created by manuv on 22/10/2016.
  */
-public abstract class ChainBase {
-    private ChainBase next;
+public interface ChainBase {
 
-    public void setNext(ChainBase next) {
-        this.next = next;
-    }
+    public void setNext(ChainBase next);
 
-    public void goNext(String input) {
-        if (next != null) {
-            next.handle(input);
-        }
-        else {
-            System.out.println("Valid input!");
-        }
-    }
+    public void goNext(String input);
 
-    public abstract void handle(String input);
+    public void handle(String input);
 }

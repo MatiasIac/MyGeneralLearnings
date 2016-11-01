@@ -10,18 +10,17 @@ public class LengthValidator extends Rule {
     private int sizeLimit;
 
     public LengthValidator (int sizeLimit){
+        name = "LENGTH VALIDATOR";
         this.sizeLimit = sizeLimit;
     }
 
     @Override
     public void handle(String input) {
         if (input.length() < sizeLimit){
-            //notificar que se mueve
+            notifyObservers();
             goNext(input);
-
         }
         else{
-            //notificar que se mueve
             System.out.printf("Error. Input exceeds size limit");
         }
     }

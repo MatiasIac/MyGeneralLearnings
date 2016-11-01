@@ -8,15 +8,17 @@ import test.factoryMethod.Rule;
 public class IntegerValidation extends Rule {
     private final String INTEGER_REGEX = "[-]?[0-9]+";
 
+    public IntegerValidation(){
+        name = "INTEGER VALIDATOR";
+    }
+
     @Override
     public void handle(String input) {
         if (isInteger(input)) {
-            //notificar que se mueve
+            notifyObservers();
             goNext(input);
-
         } else {
-            //notificar que se mueve
-            System.out.printf("Error. Input hasn't all letters");
+            System.out.printf("Error. Input is not an Integer value");
         }
     }
 

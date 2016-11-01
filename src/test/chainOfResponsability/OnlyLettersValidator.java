@@ -7,15 +7,17 @@ import test.factoryMethod.Rule;
  */
 public class OnlyLettersValidator extends Rule{
 
+    public OnlyLettersValidator(){
+        name = "ONLY LETTERS VALIDATOR";
+    }
+
     @Override
     public void handle(String input) {
         boolean hasOnlyLetters = allLetters(input);
         if (hasOnlyLetters) {
-            //notificar que se mueve
+            notifyObservers();
             goNext(input);
-
         } else {
-            //notificar que se mueve
             System.out.printf("Error. Input hasn't all letters");
         }
     }
