@@ -9,6 +9,6 @@ public class UnderscoreExpression implements IExpression{
     public void interpret(Context context) throws Exception {
         if (!context.getExpression().contains("_"))
             throw new Exception("Incorrect syntax near _");
-
+String data[] = context.getExpression().split("_");
     }
 }
