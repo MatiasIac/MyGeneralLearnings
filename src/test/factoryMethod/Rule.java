@@ -25,12 +25,9 @@ public abstract class Rule implements ChainBase, ISubject{
     }
 
     @Override
-    public void goNext(String input) {
+    public void goNext(String input) throws Exception {
         if (next != null) {
             next.handle(input);
-        }
-        else {
-            System.out.println("Valid input!");
         }
     }
 

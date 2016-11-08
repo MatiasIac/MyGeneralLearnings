@@ -13,12 +13,12 @@ public class OnlyNumbersValidator extends Rule {
     }
 
     @Override
-    public void handle(String input) {
+    public void handle(String input) throws Exception {
         if (allNumbers(input)) {
             notifyObservers();
             goNext(input);
         } else {
-            System.out.printf("Error. Input hasn't all numbers");
+            throw new Exception("Error. Input hasn't all numbers");
         }
     }
 

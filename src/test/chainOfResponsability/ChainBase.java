@@ -7,7 +7,7 @@ public interface ChainBase {
 
     public void setNext(ChainBase next);
 
-    public void goNext(String input);
+    public void goNext(String input) throws Exception;
 
-    public void handle(String input);
+    public void handle(String input) throws Exception;
 }

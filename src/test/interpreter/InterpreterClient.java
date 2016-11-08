@@ -1,6 +1,7 @@
 package test.interpreter;
 
-import test.Tarjeta;
+import test.CreditCard;
+import test.proxy.IProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,17 +9,22 @@ import java.util.List;
 /**
  * Created by manuv on 3/11/2016.
  */
-public class InterpreterClient {
+public class InterpreterClient implements IProxy {
     private Context context;
 
-    public void analyze(Tarjeta tarjeta) throws Exception {
-        context = new Context(tarjeta.getNumero());
+    public void analyze(CreditCard creditCard) {
+        context = new Context(creditCard.getCode());
         List<IExpression> tree = new ArrayList<>();
-        tree.add(new UnderscoreExpression());
+        tree.add(new LengthExpression());
+        tree.add(new CardCodeExpression());
+
 
         for (IExpression expression : tree) {
-            expression.interpret(context);
-            //result = result && interpreterContext.isValid();
+            try {
+                expression.interpret(context);
+            } catch (Exception e) {
+                System.out.println("INVALID INPUT: " + e.getMessage());
+            }
         }
 
     }

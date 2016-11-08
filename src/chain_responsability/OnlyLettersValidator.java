@@ -1,4 +1,4 @@
-package test.chainOfResponsability;
+package chain_responsability;
 
 import test.factoryMethod.Rule;
 

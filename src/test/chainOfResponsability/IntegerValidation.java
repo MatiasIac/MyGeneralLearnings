@@ -13,12 +13,12 @@ public class IntegerValidation extends Rule {
     }
 
     @Override
-    public void handle(String input) {
+    public void handle(String input) throws Exception {
         if (isInteger(input)) {
             notifyObservers();
             goNext(input);
         } else {
-            System.out.printf("Error. Input is not an Integer value");
+            throw new Exception("Error. Input is not an Integer value");
         }
     }
 
