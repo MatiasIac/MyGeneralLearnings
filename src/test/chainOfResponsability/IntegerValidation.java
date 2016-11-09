@@ -14,8 +14,10 @@ public class IntegerValidation extends Rule {
 
     @Override
     public void handle(String input) throws Exception {
+        System.out.println("-----");
+        System.out.println("Analyzing in: " + name + ". input = [" + input + "]");
+        notifyObservers();
         if (isInteger(input)) {
-            notifyObservers();
             goNext(input);
         } else {
             throw new Exception("Error. Input is not an Integer value");

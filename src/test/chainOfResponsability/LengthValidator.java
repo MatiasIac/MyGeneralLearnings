@@ -16,12 +16,14 @@ public class LengthValidator extends Rule {
 
     @Override
     public void handle(String input) throws Exception {
-        if (input.length() < sizeLimit){
-            notifyObservers();
+        System.out.println("-----");
+        System.out.println("Analyzing in: " + name + ". input = [" + input + "]");
+        notifyObservers();
+        if (input.length() == sizeLimit){
             goNext(input);
         }
         else{
-            throw new Exception("Error. Input exceeds size limit");
+            throw new Exception("Error. Input doesn't have " + sizeLimit + " characters");
         }
     }
 }

@@ -13,6 +13,7 @@ public class InterpreterClient implements IProxy {
     private Context context;
 
     public void analyze(CreditCard creditCard) {
+        Boolean validExpression = true;
         context = new Context(creditCard.getCode());
         List<IExpression> tree = new ArrayList<>();
         tree.add(new LengthExpression());
@@ -23,8 +24,15 @@ public class InterpreterClient implements IProxy {
             try {
                 expression.interpret(context);
             } catch (Exception e) {
+                validExpression = false;
                 System.out.println("INVALID INPUT: " + e.getMessage());
+                break;
             }
+        }
+        if (validExpression) {
+            System.out.println("VALID Credit Card");
+        } else{
+            System.out.println("INVALID Card");
         }
 
     }

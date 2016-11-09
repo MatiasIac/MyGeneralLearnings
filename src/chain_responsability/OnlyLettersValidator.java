@@ -12,7 +12,7 @@ public class OnlyLettersValidator extends Rule{
     }
 
     @Override
-    public void handle(String input) {
+    public void handle(String input) throws Exception {
         boolean hasOnlyLetters = allLetters(input);
         if (hasOnlyLetters) {
             notifyObservers();

@@ -9,8 +9,7 @@ public class ConsoleLogger implements IObserver {
 
     @Override
     public void update(Rule rule) {
-        System.out.println("ConsoleLogger.update");
-        System.out.println("moved to rule = [" + rule.getName() + "]");
+        System.out.println("ConsoleLogger.update: Analyzing rule = [" + rule.getName() + "]");
     }
 
 }

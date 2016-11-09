@@ -16,7 +16,6 @@ public class Proxy implements IProxy {
         String brand = creditCard.getBrand().toUpperCase();
         if (!brand.equals(VISA) && !brand.equals(MASTER)) {
             System.out.println("Credit Card rejected: " + brand + " is not a valid credit card brand");
-            System.out.println("creditCard = [" + creditCard + "]");
         } else {
             client.analyze(creditCard);
         }

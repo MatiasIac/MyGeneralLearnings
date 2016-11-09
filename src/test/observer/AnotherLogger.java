@@ -9,8 +9,7 @@ public class AnotherLogger implements IObserver {
 
     @Override
     public void update(Rule rule) {
-        System.out.println("AnotherLogger.update");
-        System.out.println("moved to rule = [" + rule.getName() + "]");
+        System.out.println("AnotherLogger.update: Analyzing rule = [" + rule.getName() + "]");
 
     }
 }

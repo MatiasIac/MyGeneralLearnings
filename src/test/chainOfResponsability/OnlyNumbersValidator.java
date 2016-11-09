@@ -14,8 +14,10 @@ public class OnlyNumbersValidator extends Rule {
 
     @Override
     public void handle(String input) throws Exception {
+        System.out.println("-----");
+        System.out.println("Analyzing in: " + name + ". input = [" + input + "]");
+        notifyObservers();
         if (allNumbers(input)) {
-            notifyObservers();
             goNext(input);
         } else {
             throw new Exception("Error. Input hasn't all numbers");
