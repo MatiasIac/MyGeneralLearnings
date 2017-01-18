@@ -1,0 +1,124 @@
+use System.Drawing
+use System.Windows.Forms
+
+class CarSprite
+    var _x as int = 0
+    var _y as int = 0
+    var _car = System.Drawing.Bitmap('car.png')
+
+    cue init
+        base.init
+
+    def setX(x)
+        _x = x
+
+    def setY(y)
+        _y = y
+
+    def draw(context)
+        context.drawImage(_car, System.Drawing.Rectangle(_x, _y, 32, 52))
+
+class EnemySprite
+    var _enemy = System.Drawing.Bitmap('enemy.png')
+    var _y = 0
+    var _speed = 5
+    var _rail = 0
+    var _isVisible as bool
+
+    cue init(rail)
+        base.init
+        _rail = rail
+
+    def getY as int
+        return _y
+    
+    def setY(y)
+        _y = y
+
+    def setVisibility(visibility)
+        _isVisible = visibility
+
+    def draw(context)
+        _y = _y + _speed
+        
+        if _isVisible
+            context.drawImage(_enemy, System.Drawing.Rectangle((0 + (_rail * 90)) + 5, _y, 55, 44))
+
+class BackgroundSprite
+    var _background = System.Drawing.Bitmap('background.png')
+    var _y = 0
+    var _speed = 5
+
+    cue init
+        base.init
+
+    def draw(context)
+        _y = _y + _speed
+        if _y > 480
+            _y = 0
+
+        context.drawImage(_background, System.Drawing.Rectangle(0, _y, 250, 480))
+        context.drawImage(_background, System.Drawing.Rectangle(0, _y - 480, 250, 480))
+
+
+class FormContext inherits Form
+    var _car as CarSprite
+    var _background as BackgroundSprite
+    var _enemies = [EnemySprite(0), EnemySprite(1), EnemySprite(2)]
+    
+    var _canvas as PictureBox
+    var _context = Bitmap(250, 480, System.Drawing.Imaging.PixelFormat.Format16bppRgb555)
+    var _timer as System.Windows.Forms.Timer
+
+	cue init
+		base.init
+		.text = 'My Cobra Game'
+        .clientSize = System.Drawing.Size(250, 480)
+        .formBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        .maximizeBox = false
+        .minimizeBox = false
+        flp = FlowLayoutPanel(parent=this, dock=DockStyle.Fill, flowDirection=FlowDirection.TopDown)
+        
+        gray = System.Drawing.Color.fromArgb(255, 0, 0)
+        
+        _car = CarSprite()
+        _background = BackgroundSprite()
+
+        _canvas = PictureBox(parent=flp, size=System.Drawing.Size(250, 480), backColor=gray, margin=System.Windows.Forms.Padding(0))
+        listen _canvas.mouseMove, ref .canvas_mouseMove
+
+        _timer = System.Windows.Forms.Timer()
+        listen _timer.tick, ref .timer_tick
+        _timer.interval = 33
+        _timer.enabled = true
+
+    def calculateVisibility
+        rand as Random = Random()
+        result = rand.next(2)
+        i = 0
+        for enemy in _enemies
+            enemy.setY(0)
+            enemy.setVisibility(i == result)
+            i = i + 1
+
+    def timer_tick(sender, e as System.EventArgs)
+        tempCanvas = Graphics.fromImage(_context)
+        _background.draw(tempCanvas)
+
+        for enemy in _enemies
+            enemy.draw(tempCanvas)
+
+        _car.draw(tempCanvas)
+        _canvas.image = _context
+
+        if _enemies[0].getY() >= 480
+            .calculateVisibility
+
+    def canvas_mouseMove(sender, e as MouseEventArgs)
+        _car.setX(e.x)
+        _car.setY(e.y)
+
+class Program
+
+	def main has STAThread
+		Application.run(FormContext())
