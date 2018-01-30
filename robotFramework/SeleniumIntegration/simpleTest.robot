@@ -14,9 +14,9 @@ Google my name and find something
 *** Keywords ***
 Google and check results
 	[Arguments]		${searchkey}	${result}
-	Input Text		id=lst-ib			${searchkey}
+	Input Text		id=lst-ib		${searchkey}
 	Click Button	name=btnK
-	Wait Until Page Contains	${result}
+	Wait Until Page Contains		${result}
 
 Go to homepage
 	Open Browser	${HOMEPAGE}		${BROWSER}
